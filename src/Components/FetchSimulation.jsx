@@ -1,12 +1,15 @@
 import axios from "axios";
 import PropTypes from "prop-types";
 
-const FetchSimulation = ({ formData, setResult, setLoading, loading }) => {
+const FetchSimulation = ({ formData, setResult, setLoading, loading, simulationId }) => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            // Отправка данных на бэкенд
-            const postResponse = await axios.post('http://localhost:8000/myapp/graphs/', formData);
+            // Отправка данных на бэкенд с ID симуляции
+            const postResponse = await axios.post('http://localhost:8000/myapp/graphs/', {
+                ...formData,
+                simulationId,
+            });
             const graphId = postResponse.data.id;
             // Получение обработанных данных и изображения
             const response = await axios.get(`http://localhost:8000/myapp/graphs/${graphId}/`);
@@ -29,6 +32,7 @@ FetchSimulation.propTypes = {
     setResult: PropTypes.func.isRequired,
     setLoading: PropTypes.func.isRequired,
     loading: PropTypes.bool.isRequired,
+    simulationId: PropTypes.number.isRequired,
 };
 
 export default FetchSimulation;
