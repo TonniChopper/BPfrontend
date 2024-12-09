@@ -10,34 +10,34 @@ const Home = () => {
                             <Carousel.Item>
                                 <img
                                     className="d-block w-100"
-                                    src="https://via.placeholder.com/800x400"
+                                    src="public/fem_simulation1.jpg"
                                     alt="First slide"
                                 />
                                 <Carousel.Caption>
-                                    <h3>Welcome to PyAnsys</h3>
-                                    <p>PyAnsys is a powerful tool for simulation and analysis.</p>
+                                    <h3 style={{ color: 'blanchedalmond' }}>Welcome to PyAnsys</h3>
+                                    <p style={{ color: 'darkgray' }}>PyAnsys is a powerful tool for simulation and analysis.</p>
                                 </Carousel.Caption>
                             </Carousel.Item>
                             <Carousel.Item>
                                 <img
                                     className="d-block w-100"
-                                    src="https://via.placeholder.com/800x400"
+                                    src="public/fem_simulation2.png"
                                     alt="Second slide"
                                 />
                                 <Carousel.Caption>
-                                    <h3>Advanced Features</h3>
-                                    <p>Explore the advanced features of PyAnsys for your projects.</p>
+                                    <h3 style={{ color: 'blanchedalmond' }}>Advanced Features</h3>
+                                    <p style={{ color: 'darkgray' }}>Explore the advanced features of PyAnsys for your projects.</p>
                                 </Carousel.Caption>
                             </Carousel.Item>
                             <Carousel.Item>
                                 <img
                                     className="d-block w-100"
-                                    src="https://via.placeholder.com/800x400"
+                                    src="public/fem_simulation3.png"
                                     alt="Third slide"
                                 />
                                 <Carousel.Caption>
-                                    <h3>Get Started</h3>
-                                    <p>Learn how to get started with PyAnsys today.</p>
+                                    <h3 style={{ color: 'blanchedalmond'}}>Get Started</h3>
+                                    <p style={{ color: 'darkgray' }}>Learn how to get started with PyAnsys today.</p>
                                 </Carousel.Caption>
                             </Carousel.Item>
                         </Carousel>
