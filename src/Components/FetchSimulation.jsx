@@ -1,5 +1,6 @@
 import axios from "axios";
 import PropTypes from "prop-types";
+import {Button} from "react-bootstrap";
 
 const FetchSimulation = ({ formData, setResult, setLoading, loading, simulationId }) => {
     const fetchData = async () => {
@@ -24,9 +25,9 @@ const FetchSimulation = ({ formData, setResult, setLoading, loading, simulationI
     };
 
     return (
-        <button onClick={fetchData} disabled={loading}>
+        <Button onClick={fetchData} disabled={loading}>
             {loading ? "Loading..." : "Solve"}
-        </button>
+        </Button>
     );
 };
 
