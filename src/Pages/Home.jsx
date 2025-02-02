@@ -1,4 +1,5 @@
 import { Container, Carousel, Row, Col, Card } from 'react-bootstrap';
+import '../Styles/Home.css';
 
 const Home = () => {
     return (

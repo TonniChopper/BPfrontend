@@ -3,6 +3,8 @@ import Navigation from './Components/Navigation';
 import Footer from './Components/Footer';
 import Home from './Pages/Home';
 import SimulationPage from './Pages/SimulationPage';
+import LoginPage from "./Pages/LoginPage.jsx";
+import RegisterPage from "./Pages/RegisterPage.jsx";
 
 function App() {
     return (
@@ -11,6 +13,8 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/simulation" element={<SimulationPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
             </Routes>
             <Footer />
         </div>
