@@ -1,73 +1,72 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
-import { Container, Form, Row, Col, Button } from 'react-bootstrap';
-import FetchSimulation from './FetchSimulation';
+import {useState} from 'react';
+import axios from 'axios';
+import {useNavigate} from 'react-router-dom';
 
-const SimulationForm = ({ simulationId }) => {
-    const [formData, setFormData] = useState({ temperature: '', pressure: '' });
-    const [result, setResult] = useState(null);
+const SimulationForm = () => {
+    const [formData, setFormData] = useState({
+        length: '',
+        width: '',
+        depth: '',
+        radius: '',
+        num: '',
+        e: '',
+        nu: '',
+        pressure: ''
+    });
+    const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const token = localStorage.getItem('access_token');
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleChange = e => {
+        setFormData({...formData, [e.target.name]: e.target.value});
     };
 
-    // const handleFetchSimulation = async () => {
-    //     setLoading(true);
-    //     try {
-    //         const simulationResult = await FetchSimulation(formData, simulationId);
-    //         setResult(simulationResult);
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    //     setLoading(false);
-    // };
-    return (
-        <Container className="my-5">
-            <Row className="justify-content-center">
-                <Col md="6">
-                    <h2>Simulation {simulationId}</h2>
-                    <Form>
-                        <Form.Group controlId="formTemperature">
-                            <Form.Label>Temperature</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="temperature"
-                                value={formData.temperature}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formPressure" className="mt-3">
-                            <Form.Label>Pressure</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="pressure"
-                                value={formData.pressure}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Form.Group>
-                        {/*<Button variant="primary" onClick={handleFetchSimulation} disabled={loading} className="mt-3">*/}
-                        {/*    {loading ? "Loading..." : "Solve"}*/}
-                        {/*</Button>*/}
-                        <FetchSimulation formData={formData} setLoading={setLoading} loading={loading} setResult={setResult} simulationId={simulationId}/>
-                    </Form>
-                    {result && (
-                        <div className="mt-5 text-center">
-                            <h3>{result.title}</h3>
-                            <img src={result.image} alt="Result"/>
-                            <pre>{JSON.stringify(result.data, null, 2)}</pre>
-                        </div>
-                    )}
-                </Col>
-            </Row>
-        </Container>
-    );
-};
+    const handleSubmit = async e => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
 
-SimulationForm.propTypes = {
-    simulationId: PropTypes.number.isRequired,
+        try {
+            // For authenticated users, include token
+            const config = token ? {headers: {Authorization: `Bearer ${token}`}} : {};
+            const response = await axios.post('http://localhost:8000/simulations/', formData, config);
+            navigate(`/simulations/${response.data.id}`);
+        } catch (err) {
+            setError('Simulation submission failed. Please try again.');
+        }
+        setLoading(false);
+    };
+
+    return (
+        <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white p-4">
+            <div className="w-full max-w-md bg-gray-900 p-8 rounded-lg shadow-xl">
+                <h2 className="text-3xl font-bold text-yellow-400 mb-6 text-center">New Simulation</h2>
+                {error && <p className="text-red-500 mb-4">{error}</p>}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {Object.keys(formData).map(key => (
+                        <input
+                            key={key}
+                            type="text"
+                            name={key}
+                            placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+                            value={formData[key]}
+                            onChange={handleChange}
+                            required
+                            className="w-full p-3 rounded bg-gray-800 text-white focus:ring focus:ring-yellow-400"
+                        />
+                    ))}
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className={`w-full py-3 rounded font-bold transition duration-300 ${loading ? 'bg-gray-500 cursor-not-allowed' : 'bg-yellow-500 hover:bg-orange-500'}`}
+                    >
+                        {loading ? 'Submitting...' : 'Submit Simulation'}
+                    </button>
+                </form>
+            </div>
+        </div>
+    );
 };
 
 export default SimulationForm;

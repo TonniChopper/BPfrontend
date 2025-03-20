@@ -1,35 +1,49 @@
-import { Card, Col, Row } from 'react-bootstrap';
-import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 
+const SimulationList = () => {
+  const [simulations, setSimulations] = useState([]);
+  const [error, setError] = useState(null);
 
-const simulations = [
-    { id: 1, title: "Basic Simulation", description: "Simple simulation with basic parameters" },
-    { id: 2, title: "Advanced Simulation", description: "Complex simulation with detailed results" },
-    { id: 3, title: "Expert Simulation", description: "Professional-grade simulation engine" },
-];
+  const token = localStorage.getItem('access_token'); // authentication check
 
-const SimulationList = ({ onSelect}) => {
-    return (
-        <Row className="justify-content-center">
-            {simulations.map(simulation => (
-                <Col md="4" key={simulation.id}>
-                    <Card onClick={() => onSelect(simulation.id)} className={`cursor-pointer transition-all hover:shadow-lg`}>
-                        <Card.Body>
-                            <Card.Header>
-                                <Card.Title>{simulation.title}</Card.Title>
-                            </Card.Header>
-                            <Card.Text>
-                                <p className="text-gray-600">{simulation.description}</p>
-                            </Card.Text>
-                        </Card.Body>
-                    </Card>
-                </Col>
-            ))}
-        </Row>
-    );
-};
-SimulationList.propTypes = {
-    onSelect: PropTypes.func.isRequired,
+  useEffect(() => {
+    if (token) {
+      axios.get('http://localhost:8000/simulations/', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(response => setSimulations(response.data))
+      .catch(err => setError('Failed to load simulations.'));
+    }
+  }, [token]);
+
+  return (
+    <div className="p-8">
+      <h2 className="text-2xl font-bold text-yellow-400 mb-4">Your Simulations</h2>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {token ? (
+        <ul className="space-y-4">
+          {simulations.map(sim => (
+            <li key={sim.id} className="p-4 bg-gray-900 rounded shadow hover:shadow-xl">
+              <Link to={`/simulations/${sim.id}`} className="text-white">
+                {sim.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-300">Please log in to see your simulations.</p>
+      )}
+      <div className="mt-6">
+        <Link
+          to="/simulations/new"
+          className="px-4 py-2 bg-yellow-500 text-black rounded hover:bg-orange-500 transition duration-300">
+          Create New Simulation
+        </Link>
+      </div>
+    </div>
+  );
 };
 
 export default SimulationList;

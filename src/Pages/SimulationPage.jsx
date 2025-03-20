@@ -1,20 +1,20 @@
-// src/Pages/SimulationPage.jsx
-import { useState } from 'react';
+import {useState} from 'react';
 import SimulationList from '../Components/SimulationList';
 import SimulationForm from '../Components/SimulationForm';
-import { Container } from 'react-bootstrap';
 
 const SimulationPage = () => {
     const [selectedSimulation, setSelectedSimulation] = useState(null);
 
     return (
-        <Container className="my-5">
-            {!selectedSimulation ? (
-                <SimulationList onSelect={setSelectedSimulation} />
-            ) : (
-                <SimulationForm simulationId={selectedSimulation} />
-            )}
-        </Container>
+        <div className="min-h-screen bg-black text-white py-8">
+            <div className="container mx-auto">
+                {!selectedSimulation ? (
+                    <SimulationList onSelect={setSelectedSimulation}/>
+                ) : (
+                    <SimulationForm simulationId={selectedSimulation}/>
+                )}
+            </div>
+        </div>
     );
 };
 
