@@ -7,10 +7,9 @@ const SimulationList = () => {
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem('access_token'); // authentication check
-
   useEffect(() => {
     if (token) {
-      axios.get('http://localhost:8000/simulations/', {
+      axios.get('http://localhost:8000/myapp/simulations/', {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(response => setSimulations(response.data))

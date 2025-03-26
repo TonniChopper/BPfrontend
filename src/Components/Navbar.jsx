@@ -30,7 +30,7 @@ const Navbar = () => {
               {token ? (
                   <>
                       <Link
-                          to="/SimulationPage"
+                          to="/simulation"
                           className="px-4 py-2 bg-amber-500 rounded hover:bg-amber-400 transition"
                       >
                             Simulations

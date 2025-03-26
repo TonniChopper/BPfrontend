@@ -30,7 +30,7 @@ const Registration = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await Api.post('/learning/user/registration/', formData);
+            const response = await Api.post('/myapp/user/registration/', formData);
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
             navigate('/ProfilePage');

@@ -18,10 +18,10 @@ const Login = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await Api.post('/learning/token/', formData);
+            const response = await Api.post('/myapp/token/', formData);
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
-            navigate('/ProfilePage');
+            navigate('/simulations');
         } catch (err) {
             console.error(err);
             setError('Login failed. Please check your credentials.');
