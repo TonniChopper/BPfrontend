@@ -39,9 +39,9 @@ const SimulationForm = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white p-4">
-            <div className="w-full max-w-md bg-gray-900 p-8 rounded-lg shadow-xl">
-                <h2 className="text-3xl font-bold text-yellow-400 mb-6 text-center">New Simulation</h2>
+        <div className="min-h-screen bg-gradient-to-r from-gray-700 via-gray-800 to-gray-900 flex flex-col items-center justify-center text-white p-4">
+            <div className="w-full max-w-md p-8 rounded-lg shadow-xl bg-gray-800">
+                <h2 className="text-3xl font-bold mb-6 text-center text-indigo-300">New Simulation</h2>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {Object.keys(formData).map(key => (
@@ -53,13 +53,13 @@ const SimulationForm = () => {
                             value={formData[key]}
                             onChange={handleChange}
                             required
-                            className="w-full p-3 rounded bg-gray-800 text-white focus:ring focus:ring-yellow-400"
+                            className="w-full p-3 rounded bg-gray-800 text-white focus:ring focus:ring-amber-500"
                         />
                     ))}
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full py-3 rounded font-bold transition duration-300 ${loading ? 'bg-gray-500 cursor-not-allowed' : 'bg-yellow-500 hover:bg-orange-500'}`}
+                        className={`w-full py-3 rounded font-bold transition duration-300 ${loading ? 'bg-gray-500 cursor-not-allowed' : 'bg-amber-500 hover:bg-orange-500'}`}
                     >
                         {loading ? 'Submitting...' : 'Submit Simulation'}
                     </button>

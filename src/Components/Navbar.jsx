@@ -22,8 +22,8 @@ const Navbar = () => {
   };
 
   return (
-      <nav className="bg-black py-4 px-8 shadow-md flex justify-between items-center text-white">
-          <Link to="/" className="text-xl font-bold hover:text-yellow-400">
+      <nav className="bg-gradient-to-r from-gray-800 to-gray-900 py-4 px-8 shadow-md flex justify-between items-center text-white">
+          <Link to="/" className="text-xl font-bold hover:text-amber-500 transition">
               WebPyAnsys
           </Link>
           <div className="space-x-4">
@@ -31,19 +31,19 @@ const Navbar = () => {
                   <>
                       <Link
                           to="/SimulationPage"
-                          className="px-4 py-2 bg-yellow-500 rounded hover:bg-yellow-300"
+                          className="px-4 py-2 bg-amber-500 rounded hover:bg-amber-400 transition"
                       >
-                          Lessons
+                            Simulations
                       </Link>
                       <Link
                           to="/ProfilePage"
-                          className="px-4 py-2 bg-yellow-500 rounded hover:bg-yellow-300 flex items-center"
+                          className="px-4 py-2 bg-amber-500 rounded hover:bg-amber-400 transition flex items-center"
                       >
                           <FaUser size={20}/>
                       </Link>
                       <button
                           onClick={logout}
-                          className="px-4 py-2 bg-yellow-500 rounded hover:bg-yellow-300 flex items-center"
+                          className="px-4 py-2 bg-amber-500 rounded hover:bg-amber-400 transition flex items-center"
                       >
                           <FaSignOutAlt size={20}/>
                       </button>
@@ -51,14 +51,14 @@ const Navbar = () => {
               ) : (
                   <>
                       <Link
-                          to="/registration"
-                          className="px-4 py-2 bg-yellow-500 rounded hover:bg-yellow-300"
+                          to="/register"
+                          className="px-4 py-2 bg-amber-500 rounded hover:bg-amber-400 transition"
                       >
                           Register
                       </Link>
                       <Link
                           to="/login"
-                          className="px-4 py-2 bg-yellow-500 rounded hover:bg-yellow-300"
+                          className="px-4 py-2 bg-amber-500 rounded hover:bg-amber-400 transition"
                       >
                           Login
                       </Link>
