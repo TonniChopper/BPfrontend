@@ -29,8 +29,22 @@ const SimulationForm = () => {
 
         try {
             // For authenticated users, include token
+            const convertedData = {
+                length: parseFloat(formData.length),
+                width: parseFloat(formData.width),
+                depth: parseFloat(formData.depth),
+                radius: parseFloat(formData.radius),
+                num: parseInt(formData.num, 10),
+                e: parseFloat(formData.e),
+                nu: parseFloat(formData.nu),
+                pressure: parseFloat(formData.pressure)
+            }
             const config = token ? {headers: {Authorization: `Bearer ${token}`}} : {};
-            const response = await axios.post('http://localhost:8000/myapp/simulations/', formData, config);
+            const dataToSend = {parameters : convertedData}
+            const response = await axios.post('http://localhost:8000/myapp/simulations/', dataToSend, config);
+            if(response.status === 200){
+                print('Happy')
+            }
             navigate(`/simulations/${response.data.id}`);
         } catch (err) {
             setError('Simulation submission failed. Please try again.');

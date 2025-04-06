@@ -3,19 +3,19 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 const SimulationList = () => {
-    const [simulations, setSimulations] = useState([]);
-    const [error, setError] = useState(null);
-    const token = localStorage.getItem('access_token');
+  const [simulations, setSimulations] = useState([]);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        if (token) {
-            axios.get('http://localhost:8000/myapp/simulations/', {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(response => setSimulations(response.data))
-                .catch(() => setError('Failed to load simulations.'));
-        }
-    }, [token]);
+  const token = localStorage.getItem('access_token'); // authentication check
+  useEffect(() => {
+    if (token) {
+      axios.get('http://localhost:8000/myapp/simulations/', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(response => setSimulations(response.data))
+      .catch(() => setError('Failed to load simulations.'));
+    }
+  }, [token]);
 
     return (
         <div className="bg-gray-900 rounded-lg p-6 shadow-lg">
