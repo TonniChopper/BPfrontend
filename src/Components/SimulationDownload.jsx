@@ -22,7 +22,7 @@ const SimulationDownload = ({ simulationId }) => {
       document.body.appendChild(link);
       link.click();
       link.remove();
-    } catch (err) {
+    } catch (error) {
       setError('Download failed.');
     }
     setDownloading(false);

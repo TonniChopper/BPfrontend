@@ -11,7 +11,7 @@ const SimulationStatus = () => {
     const fetchStatus = () => {
       axios.get(`http://localhost:8000/simulations/${id}/status/`)
       .then(response => setStatus(response.data))
-      .catch(err => setError('Failed to retrieve status.'));
+      .catch(() => setError('Failed to retrieve status.'));
     };
 
     fetchStatus();

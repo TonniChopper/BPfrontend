@@ -1,9 +1,11 @@
-import {useState, useEffect} from 'react';
+// File: src/Components/SimulationDetail.jsx
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import {useParams} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import SimulationViewer from './SimulationViewer';
 
 const SimulationDetail = () => {
-    const {id} = useParams();
+    const { id } = useParams();
     const [simulation, setSimulation] = useState(null);
     const [error, setError] = useState(null);
     const [resuming, setResuming] = useState(false);
@@ -11,15 +13,14 @@ const SimulationDetail = () => {
     useEffect(() => {
         axios.get(`http://localhost:8000/simulations/${id}/`)
             .then(response => setSimulation(response.data))
-            .catch(err => setError('Failed to load simulation details.'));
+            .catch(() => setError('Failed to load simulation details.'));
     }, [id]);
 
     const handleResume = async () => {
         setResuming(true);
         try {
             await axios.post(`http://localhost:8000/simulations/${id}/resume/`);
-            // Optionally update simulation state or redirect
-        } catch (err) {
+        } catch {
             setError('Failed to resume simulation.');
         }
         setResuming(false);
@@ -42,6 +43,7 @@ const SimulationDetail = () => {
                 >
                     {resuming ? 'Resuming...' : 'Resume Simulation'}
                 </button>
+                <SimulationViewer simulation={simulation} />
             </div>
         </div>
     );
