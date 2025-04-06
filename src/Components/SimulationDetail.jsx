@@ -11,7 +11,7 @@ const SimulationDetail = () => {
     const [resuming, setResuming] = useState(false);
 
     useEffect(() => {
-        axios.get(`http://localhost:8000/simulations/${id}/`)
+        axios.get(`http://localhost:8000/myapp/simulations/${id}/`)
             .then(response => setSimulation(response.data))
             .catch(() => setError('Failed to load simulation details.'));
     }, [id]);

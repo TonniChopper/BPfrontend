@@ -9,7 +9,7 @@ const SimulationStatus = () => {
 
   useEffect(() => {
     const fetchStatus = () => {
-      axios.get(`http://localhost:8000/simulations/${id}/status/`)
+      axios.get(`http://localhost:8000/myapp/simulations/${id}/status/`)
       .then(response => setStatus(response.data))
       .catch(() => setError('Failed to retrieve status.'));
     };

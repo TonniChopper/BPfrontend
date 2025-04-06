@@ -30,7 +30,7 @@ const SimulationForm = () => {
         try {
             // For authenticated users, include token
             const config = token ? {headers: {Authorization: `Bearer ${token}`}} : {};
-            const response = await axios.post('http://localhost:8000/simulations/', formData, config);
+            const response = await axios.post('http://localhost:8000/myapp/simulations/', formData, config);
             navigate(`/simulations/${response.data.id}`);
         } catch (err) {
             setError('Simulation submission failed. Please try again.');

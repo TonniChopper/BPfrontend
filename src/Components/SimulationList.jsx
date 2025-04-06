@@ -9,7 +9,7 @@ const SimulationList = () => {
 
     useEffect(() => {
         if (token) {
-            axios.get('http://localhost:8000/simulations/', {
+            axios.get('http://localhost:8000/myapp/simulations/', {
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then(response => setSimulations(response.data))

@@ -11,7 +11,7 @@ const SimulationDownload = ({ simulationId }) => {
     setDownloading(true);
     setError(null);
     try {
-      const response = await axios.get(`http://localhost:8000/simulations/${simulationId}/download/`, {
+      const response = await axios.get(`http://localhost:8000/myapp/simulations/${simulationId}/download/`, {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob'
       });
