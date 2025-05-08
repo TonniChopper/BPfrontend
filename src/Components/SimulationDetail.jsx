@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import axios from 'axios';
 import {useParams} from 'react-router-dom';
-import SimulationViewer from "./SimulationViewer.jsx";
+import SimulationViewer2D from "./SimulationViewer2D.jsx";
 
 const SimulationDetail = () => {
     const {id} = useParams();
@@ -43,7 +43,7 @@ const SimulationDetail = () => {
                 >
                     {resuming ? 'Resuming...' : 'Resume Simulation'}
                 </button>
-                <SimulationViewer simulation={simulation} />
+                <SimulationViewer2D simulation={simulation} />
             </div>
         </div>
     );
