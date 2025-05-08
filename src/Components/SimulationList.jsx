@@ -43,6 +43,13 @@ const SimulationList = () => {
             ) : (
                 <p className="text-gray-300">Please log in to see your simulations.</p>
             )}
+          <div className="mt-6">
+            <Link
+                to="/simulations/new"
+                className="px-4 py-2 bg-yellow-500 text-black rounded hover:bg-orange-500 transition duration-300">
+              Create New Simulation
+            </Link>
+          </div>
         </div>
     );
 };
