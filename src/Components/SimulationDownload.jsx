@@ -12,8 +12,13 @@ const SimulationDownload = ({simulationId}) => {
 
         try {
             const token = localStorage.getItem('access_token');
+
+            // Try a different endpoint format if needed
+            // You might need to adjust this based on your actual API structure
+            const endpoint = `http://localhost:8000/myapp/simulations/${simulationId}/result/download/`;
+
             const response = await axios.get(
-                `http://localhost:8000/myapp/simulations/${simulationId}/download/`,
+                endpoint,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -26,20 +31,31 @@ const SimulationDownload = ({simulationId}) => {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `simulation_${simulationId}_results.zip`);
+
+            // Get filename from Content-Disposition header if available
+            const contentDisposition = response.headers['content-disposition'];
+            const filename = contentDisposition
+                ? contentDisposition.split('filename=')[1]?.replace(/["']/g, '')
+                : `simulation_${simulationId}_results.zip`;
+
+            link.setAttribute('download', filename);
             document.body.appendChild(link);
             link.click();
             link.remove();
         } catch (err) {
-            setError(err.response?.status === 404
-                ? 'Download not available for this simulation'
-                : 'Failed to download simulation results');
-            console.error(err);
+            console.error('Download error:', err);
+
+            if (err.response?.status === 404) {
+                setError('Download not available for this simulation');
+            } else if (err.response?.status === 403) {
+                setError('You do not have permission to download this file');
+            } else {
+                setError('Failed to download simulation results');
+            }
         } finally {
             setDownloading(false);
         }
     };
-
     return (
         <div className="flex flex-col items-end">
             <button
