@@ -1,21 +1,23 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 import SimulationDownload from './SimulationDownload';
 import SimulationViewer from './SimulationViewer';
 
 const SimulationDetail = () => {
-    const { id } = useParams();
+    const {id} = useParams();
     const [simulation, setSimulation] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [resuming, setResuming] = useState(false);
+    const [resumeError, setResumeError] = useState(null);
     const token = localStorage.getItem('access_token');
 
     useEffect(() => {
         const fetchSimulationDetails = async () => {
             try {
-                const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+                const config = token ? {headers: {Authorization: `Bearer ${token}`}} : {};
                 const response = await axios.get(`http://localhost:8000/myapp/simulations/${id}/`, config);
                 setSimulation(response.data);
             } catch (err) {
@@ -36,6 +38,33 @@ const SimulationDetail = () => {
     const handleCloseModal = () => {
         setSelectedImage(null);
     };
+
+    const handleResumeSimulation = async () => {
+        setResuming(true);
+        setResumeError(null);
+
+        try {
+            const response = await axios.post(
+                `http://localhost:8000/myapp/simulations/${id}/resume/`,
+                {},
+                {headers: {Authorization: `Bearer ${token}`}}
+            );
+
+            // Update the simulation status in the state
+            setSimulation(prev => ({
+                ...prev,
+                status: 'RUNNING'
+            }));
+
+            // Show success message or trigger refresh
+        } catch (err) {
+            setResumeError('Failed to resume simulation. Please try again.');
+            console.error(err);
+        } finally {
+            setResuming(false);
+        }
+    };
+
 
     if (loading) {
         return (
@@ -72,12 +101,29 @@ const SimulationDetail = () => {
                 {/* Metadata section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div>
-                        <p className="mb-2"><span className="font-bold">Status:</span> {simulation.status || 'Unknown'}</p>
-                        <p className="mb-2"><span className="font-bold">Created:</span> {formatDate(simulation.created_at)}</p>
-                        <p className="mb-2"><span className="font-bold">Completed:</span> {formatDate(simulation.completed_at)}</p>
+                        <p className="mb-2"><span className="font-bold">Status:</span> {simulation.status || 'Unknown'}
+                        </p>
+                        <p className="mb-2"><span
+                            className="font-bold">Created:</span> {formatDate(simulation.created_at)}</p>
+                        <p className="mb-2"><span
+                            className="font-bold">Completed:</span> {formatDate(simulation.completed_at)}</p>
                     </div>
-                    <div>
-                        <SimulationDownload simulationId={simulation.id} />
+                    <div className="flex flex-col items-end gap-3">
+                        <SimulationDownload simulationId={simulation.id}/>
+
+                        {/* Resume button - only show for failed or certain status simulations */}
+                        {(simulation.status === 'FAILED' || simulation.status === 'PENDING') && (
+                            <div className="flex flex-col items-end">
+                                <button
+                                    onClick={handleResumeSimulation}
+                                    disabled={resuming}
+                                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {resuming ? 'Resuming...' : 'Resume Simulation'}
+                                </button>
+                                {resumeError && <p className="text-red-500 text-sm mt-1">{resumeError}</p>}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -102,17 +148,20 @@ const SimulationDetail = () => {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {statistics.max_displacement && (
                                 <div className="bg-gray-700 p-3 rounded-lg">
-                                    <p><span className="font-bold">Max Displacement:</span> {statistics.max_displacement}</p>
+                                    <p><span
+                                        className="font-bold">Max Displacement:</span> {statistics.max_displacement}</p>
                                 </div>
                             )}
                             {statistics.min_displacement && (
                                 <div className="bg-gray-700 p-3 rounded-lg">
-                                    <p><span className="font-bold">Min Displacement:</span> {statistics.min_displacement}</p>
+                                    <p><span
+                                        className="font-bold">Min Displacement:</span> {statistics.min_displacement}</p>
                                 </div>
                             )}
                             {statistics.avg_displacement && (
                                 <div className="bg-gray-700 p-3 rounded-lg">
-                                    <p><span className="font-bold">Avg Displacement:</span> {statistics.avg_displacement}</p>
+                                    <p><span
+                                        className="font-bold">Avg Displacement:</span> {statistics.avg_displacement}</p>
                                 </div>
                             )}
                             {statistics.max_stress && (
@@ -151,9 +200,9 @@ const SimulationDetail = () => {
                     <h2 className="text-2xl font-bold text-amber-400 mb-4">Simulation Images</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[
-                            { title: 'Geometry', url: simulation.geometry_image_url },
-                            { title: 'Mesh', url: simulation.mesh_image_url },
-                            { title: 'Results', url: simulation.results_image_url }
+                            {title: 'Geometry', url: simulation.geometry_image_url},
+                            {title: 'Mesh', url: simulation.mesh_image_url},
+                            {title: 'Results', url: simulation.results_image_url}
                         ].map((image) => (
                             <div key={image.title} className="bg-gray-700 rounded-lg overflow-hidden h-full">
                                 <div className="p-4">
@@ -181,7 +230,7 @@ const SimulationDetail = () => {
                     <div className="mt-8">
                         <h2 className="text-2xl font-bold text-amber-400 mb-4">3D Model</h2>
                         <div className="bg-gray-700 p-4 rounded-lg">
-                            <SimulationViewer modelUrl={simulation.model_url} />
+                            <SimulationViewer modelUrl={simulation.model_url}/>
                         </div>
                     </div>
                 )}
