@@ -21,7 +21,7 @@ const Login = () => {
             const response = await Api.post('/myapp/token/', formData);
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
-            navigate('/simulations');
+            navigate('/');
         } catch (err) {
             console.error(err);
             setError('Login failed. Please check your credentials.');
