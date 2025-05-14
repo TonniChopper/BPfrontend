@@ -31,8 +31,9 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white">
+        <>
             <Navbar />
+        <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white">
             <div className="w-full max-w-md bg-gray-900 p-8 rounded-lg shadow-lg">
                 <h1 className="text-3xl font-bold text-yellow-400 mb-6">Login</h1>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
@@ -70,6 +71,7 @@ const Login = () => {
                 </form>
             </div>
         </div>
+        </>
     );
 };
 

@@ -7,6 +7,7 @@ import SimulationDetail from "./Components/SimulationDetail.jsx";
 import SimulationDownload from "./Components/SimulationDownload.jsx";
 import SimulationForm from "./Components/SimulationForm.jsx";
 import SimulationStatus from "./Components/SimulationStatus.jsx";
+import SimulationSelection from "./Pages/SimulationSelection.jsx";
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
                 <Route path="/simulations/:id" element={<SimulationDetail />} />
                 <Route path="/simulations/:id/status" element={<SimulationStatus />} />
                 <Route path="/simulations/:id/download" element={<SimulationDownload />} />
+                <Route path="/simulations" element={<SimulationSelection />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
             </Routes>

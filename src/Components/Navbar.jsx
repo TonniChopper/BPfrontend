@@ -35,12 +35,12 @@ const Navbar = () => {
                       >
                             Simulations
                       </Link>
-                      <Link
-                          to="/ProfilePage"
-                          className="px-4 py-2 bg-amber-500 rounded hover:bg-amber-400 transition flex items-center"
-                      >
-                          <FaUser size={20}/>
-                      </Link>
+                      {/*<Link*/}
+                      {/*    to="/ProfilePage"*/}
+                      {/*    className="px-4 py-2 bg-amber-500 rounded hover:bg-amber-400 transition flex items-center"*/}
+                      {/*>*/}
+                      {/*    <FaUser size={20}/>*/}
+                      {/*</Link>*/}
                       <button
                           onClick={logout}
                           className="px-4 py-2 bg-amber-500 rounded hover:bg-amber-400 transition flex items-center"

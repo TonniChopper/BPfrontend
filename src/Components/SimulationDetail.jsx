@@ -1,23 +1,28 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import {useParams} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import SimulationDownload from './SimulationDownload';
 import SimulationViewer from './SimulationViewer';
+import Navbar from "./Navbar.jsx";
 
 const SimulationDetail = () => {
-    const {id} = useParams();
+    const { id } = useParams();
     const [simulation, setSimulation] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [resuming, setResuming] = useState(false);
     const [resumeError, setResumeError] = useState(null);
+    const [zoomLevel, setZoomLevel] = useState(1);
+    const [isPanning, setIsPanning] = useState(false);
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const imageRef = useRef(null);
     const token = localStorage.getItem('access_token');
 
     useEffect(() => {
         const fetchSimulationDetails = async () => {
             try {
-                const config = token ? {headers: {Authorization: `Bearer ${token}`}} : {};
+                const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
                 const response = await axios.get(`http://localhost:8000/myapp/simulations/${id}/`, config);
                 setSimulation(response.data);
             } catch (err) {
@@ -33,10 +38,39 @@ const SimulationDetail = () => {
 
     const handleImageClick = (imageUrl) => {
         setSelectedImage(imageUrl);
+        setZoomLevel(1);
+        setPosition({ x: 0, y: 0 });
     };
 
     const handleCloseModal = () => {
         setSelectedImage(null);
+    };
+
+    const handleZoomIn = () => {
+        setZoomLevel(prev => Math.min(prev + 0.25, 4));
+    };
+
+    const handleZoomOut = () => {
+        setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
+    };
+
+    const handleMouseDown = (e) => {
+        if (zoomLevel > 1) {
+            setIsPanning(true);
+        }
+    };
+
+    const handleMouseUp = () => {
+        setIsPanning(false);
+    };
+
+    const handleMouseMove = (e) => {
+        if (isPanning && imageRef.current) {
+            setPosition(prevPos => ({
+                x: prevPos.x + e.movementX,
+                y: prevPos.y + e.movementY
+            }));
+        }
     };
 
     const handleResumeSimulation = async () => {
@@ -44,10 +78,10 @@ const SimulationDetail = () => {
         setResumeError(null);
 
         try {
-            const response = await axios.post(
+            await axios.post(
                 `http://localhost:8000/myapp/simulations/${id}/resume/`,
                 {},
-                {headers: {Authorization: `Bearer ${token}`}}
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
             // Update the simulation status in the state
@@ -55,8 +89,6 @@ const SimulationDetail = () => {
                 ...prev,
                 status: 'RUNNING'
             }));
-
-            // Show success message or trigger refresh
         } catch (err) {
             setResumeError('Failed to resume simulation. Please try again.');
             console.error(err);
@@ -64,7 +96,6 @@ const SimulationDetail = () => {
             setResuming(false);
         }
     };
-
 
     if (loading) {
         return (
@@ -93,6 +124,7 @@ const SimulationDetail = () => {
 
     return (
         <div className="p-6 bg-gray-900 text-white min-h-screen">
+            <Navbar/>
             <div className="bg-gray-800 rounded-lg shadow-xl p-6 mb-8">
                 <h1 className="text-3xl font-bold text-amber-500 mb-6">
                     Simulation #{simulation.id}
@@ -101,15 +133,21 @@ const SimulationDetail = () => {
                 {/* Metadata section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div>
-                        <p className="mb-2"><span className="font-bold">Status:</span> {simulation.status || 'Unknown'}
-                        </p>
-                        <p className="mb-2"><span
-                            className="font-bold">Created:</span> {formatDate(simulation.created_at)}</p>
-                        <p className="mb-2"><span
-                            className="font-bold">Completed:</span> {formatDate(simulation.completed_at)}</p>
+                        <p className="mb-2"><span className="font-bold">Status:</span> {simulation.status || 'Unknown'}</p>
+                        <p className="mb-2"><span className="font-bold">Created:</span> {formatDate(simulation.created_at)}</p>
+                        <p className="mb-2"><span className="font-bold">Completed:</span> {formatDate(simulation.completed_at)}</p>
                     </div>
                     <div className="flex flex-col items-end gap-3">
-                        <SimulationDownload simulationId={simulation.id}/>
+                        {simulation.status === 'COMPLETED' ? (
+                            <SimulationDownload simulationId={simulation.id} />
+                        ) : (
+                            <button
+                                disabled
+                                className="px-4 py-2 bg-gray-600 text-gray-300 rounded cursor-not-allowed opacity-50"
+                            >
+                                Results Not Available
+                            </button>
+                        )}
 
                         {/* Resume button - only show for failed or certain status simulations */}
                         {(simulation.status === 'FAILED' || simulation.status === 'PENDING') && (
@@ -148,20 +186,17 @@ const SimulationDetail = () => {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {statistics.max_displacement && (
                                 <div className="bg-gray-700 p-3 rounded-lg">
-                                    <p><span
-                                        className="font-bold">Max Displacement:</span> {statistics.max_displacement}</p>
+                                    <p><span className="font-bold">Max Displacement:</span> {statistics.max_displacement}</p>
                                 </div>
                             )}
                             {statistics.min_displacement && (
                                 <div className="bg-gray-700 p-3 rounded-lg">
-                                    <p><span
-                                        className="font-bold">Min Displacement:</span> {statistics.min_displacement}</p>
+                                    <p><span className="font-bold">Min Displacement:</span> {statistics.min_displacement}</p>
                                 </div>
                             )}
                             {statistics.avg_displacement && (
                                 <div className="bg-gray-700 p-3 rounded-lg">
-                                    <p><span
-                                        className="font-bold">Avg Displacement:</span> {statistics.avg_displacement}</p>
+                                    <p><span className="font-bold">Avg Displacement:</span> {statistics.avg_displacement}</p>
                                 </div>
                             )}
                             {statistics.max_stress && (
@@ -200,9 +235,9 @@ const SimulationDetail = () => {
                     <h2 className="text-2xl font-bold text-amber-400 mb-4">Simulation Images</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[
-                            {title: 'Geometry', url: simulation.geometry_image_url},
                             {title: 'Mesh', url: simulation.mesh_image_url},
-                            {title: 'Results', url: simulation.results_image_url}
+                            {title: 'Deformation', url: simulation.deformation_image_url},
+                            {title: 'Stress', url: simulation.stress_image_url}
                         ].map((image) => (
                             <div key={image.title} className="bg-gray-700 rounded-lg overflow-hidden h-full">
                                 <div className="p-4">
@@ -230,17 +265,38 @@ const SimulationDetail = () => {
                     <div className="mt-8">
                         <h2 className="text-2xl font-bold text-amber-400 mb-4">3D Model</h2>
                         <div className="bg-gray-700 p-4 rounded-lg">
-                            <SimulationViewer modelUrl={simulation.model_url}/>
+                            <SimulationViewer modelUrl={simulation.model_url} />
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* Image modal */}
+            {/* Enhanced Image modal with zoom/pan functionality */}
             {selectedImage && (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-                    <div className="bg-gray-800 p-4 rounded-lg max-w-4xl w-full">
-                        <div className="flex justify-end mb-2">
+                <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
+                    <div className="bg-gray-800 p-4 rounded-lg max-w-[90vw] max-h-[90vh] w-full h-full flex flex-col">
+                        <div className="flex justify-between mb-2 items-center">
+                            <div className="flex space-x-3">
+                                <button
+                                    onClick={handleZoomIn}
+                                    className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500 transition duration-300"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                                    </svg>
+                                </button>
+                                <button
+                                    onClick={handleZoomOut}
+                                    className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500 transition duration-300"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                </button>
+                                <span className="px-4 py-2 bg-gray-700 text-white rounded">
+                                    Zoom: {Math.round(zoomLevel * 100)}%
+                                </span>
+                            </div>
                             <button
                                 onClick={handleCloseModal}
                                 className="px-4 py-2 bg-yellow-500 text-black rounded hover:bg-orange-500 transition duration-300"
@@ -248,16 +304,41 @@ const SimulationDetail = () => {
                                 Close
                             </button>
                         </div>
-                        <img
-                            src={selectedImage}
-                            alt="Enlarged simulation view"
-                            className="w-full h-auto rounded"
-                        />
+                        <div
+                            className="flex-1 overflow-hidden relative bg-gray-900 rounded"
+                            onMouseDown={handleMouseDown}
+                            onMouseUp={handleMouseUp}
+                            onMouseLeave={handleMouseUp}
+                            onMouseMove={handleMouseMove}
+                        >
+                            <div
+                                className="absolute cursor-move"
+                                style={{
+                                    transform: `scale(${zoomLevel}) translate(${position.x / zoomLevel}px, ${position.y / zoomLevel}px)`,
+                                    transformOrigin: 'center',
+                                    width: '100%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <img
+                                    ref={imageRef}
+                                    src={selectedImage}
+                                    alt="Enlarged simulation view"
+                                    className="max-w-full max-h-full object-contain"
+                                    draggable="false"
+                                />
+                            </div>
+                        </div>
+                        <div className="text-gray-300 text-sm mt-2 text-center">
+                            Drag to pan when zoomed in. Use zoom buttons to magnify details.
+                        </div>
                     </div>
                 </div>
             )}
         </div>
     );
-};
-
+}
 export default SimulationDetail;

@@ -14,23 +14,23 @@ const Footer = () => {
                     <h5 className="text-lg font-bold mb-4">Quick Links</h5>
                     <ul className="space-y-2">
                         <li>
-                            <a href="#home" className="text-white hover:text-yellow-500">
+                            <a href="/" className="text-white hover:text-yellow-500">
                                 Home
                             </a>
                         </li>
                         <li>
-                            <a href="#simulation1" className="text-white hover:text-yellow-500">
-                                Simulation 1
+                            <a href="/dashboard" className="text-white hover:text-yellow-500">
+                                Dashboard
                             </a>
                         </li>
                         <li>
-                            <a href="#simulation2" className="text-white hover:text-yellow-500">
-                                Simulation 2
+                            <a href="/simulation" className="text-white hover:text-yellow-500">
+                                My Simulations
                             </a>
                         </li>
                         <li>
-                            <a href="#simulation3" className="text-white hover:text-yellow-500">
-                                Simulation 3
+                            <a href="/simulations" className="text-white hover:text-yellow-500">
+                                Create Simulation
                             </a>
                         </li>
                     </ul>
