@@ -40,12 +40,12 @@ const SimulationForm = () => {
             description: "Simple beam structural analysis showing stress distribution under load.",
             image: "/stress.png",
             parameters: {
-                length: "10",
-                width: "2",
-                depth: "1",
+                length: "5",
+                width: "2.5",
+                depth: "0.1",
                 radius: "0.5",
-                num: "1000",
-                e: "210e9",
+                num: "3",
+                e: "2e11",
                 nu: "0.3",
                 pressure: "10000"
             }
@@ -55,12 +55,12 @@ const SimulationForm = () => {
             description: "Complex model showing deformation patterns under pressure.",
             image: "/deform.png",
             parameters: {
-                length: "5",
+                length: "15",
                 width: "5",
-                depth: "5",
+                depth: "0.5",
                 radius: "1.5",
-                num: "5000",
-                e: "70e9",
+                num: "4",
+                e: "7e11",
                 nu: "0.33",
                 pressure: "50000"
             }
@@ -111,19 +111,19 @@ const SimulationForm = () => {
 
     // Example simulation card component
     const ExampleCard = ({example}) => (
-        <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col">
+        <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col h-full">
             <img
                 src={example.image}
                 alt={example.title}
-                className="w-full h-40 object-cover"
+                className="w-full h-52 object-cover" // Increased height from h-40 to h-52
             />
-            <div className="p-4 flex flex-col flex-grow">
-                <h3 className="text-xl font-bold text-amber-400 mb-2">{example.title}</h3>
-                <p className="text-gray-300 mb-4 flex-grow">{example.description}</p>
+            <div className="p-6 flex flex-col flex-grow"> {/* Increased padding from p-4 to p-6 */}
+                <h3 className="text-2xl font-bold text-amber-400 mb-3">{example.title}</h3> {/* Increased text size and margin */}
+                <p className="text-gray-300 mb-6 flex-grow text-base">{example.description}</p> {/* Increased margin and specified text size */}
                 <button
                     type="button"
                     onClick={() => applyExample(example.parameters)}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500 transition duration-300"
+                    className="px-5 py-3 bg-indigo-600 text-white rounded hover:bg-indigo-500 transition duration-300 font-medium" // Increased padding and added font-medium
                 >
                     Use These Parameters
                 </button>
@@ -138,9 +138,9 @@ const SimulationForm = () => {
             <div className="max-w-6xl mx-auto">
                 <h1 className="text-4xl font-bold text-center mb-10 text-amber-400">Simulation Creator</h1>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10"> {/* Increased gap from gap-8 to gap-10 */}
                     {/* Left example */}
-                    <div className="hidden lg:block">
+                    <div className="hidden lg:block lg:self-start">
                         <ExampleCard example={exampleSimulations[0]}/>
                     </div>
 
@@ -197,12 +197,12 @@ const SimulationForm = () => {
                     </div>
 
                     {/* Right example */}
-                    <div className="hidden lg:block">
+                    <div className="hidden lg:block lg:self-start">
                         <ExampleCard example={exampleSimulations[1]}/>
                     </div>
 
                     {/* Mobile view examples - only shown on smaller screens */}
-                    <div className="lg:hidden col-span-1 space-y-6">
+                    <div className="lg:hidden col-span-1 space-y-8">
                         <h3 className="text-xl font-bold text-center text-indigo-300">Example Simulations</h3>
                         {exampleSimulations.map((example, index) => (
                             <ExampleCard key={index} example={example}/>

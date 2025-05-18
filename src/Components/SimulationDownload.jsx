@@ -1,18 +1,19 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 
-const SimulationDownload = ({ simulationId }) => {
+const SimulationDownload = ({simulationId}) => {
     const [downloading, setDownloading] = useState(false);
     const [error, setError] = useState(null);
     const [menuOpen, setMenuOpen] = useState(false);
 
     // File types available for download
     const fileTypes = [
-        { id: 'result', name: 'Text Results' },
-        { id: 'geometry', name: 'Geometry' },
-        { id: 'mesh', name: 'Mesh' },
-        { id: 'results', name: 'Results Image' },
-        { id: 'summary', name: 'Summary JSON' }
+        {id: 'result', name: 'Text Results'},
+        {id: 'geometry', name: 'Geometry'},
+        {id: 'mesh', name: 'Mesh'},
+        {id: 'results', name: 'Results Image'},
+        {id: 'summary', name: 'Summary JSON'}
     ];
 
     // Close menu when clicking outside
@@ -33,41 +34,59 @@ const SimulationDownload = ({ simulationId }) => {
         };
     }, [menuOpen, simulationId]);
 
-    const handleDownload = (fileType) => {
+    const handleDownload = async (fileType) => {
         setDownloading(true);
         setError(null);
 
         try {
             const token = localStorage.getItem('access_token');
-            const endpoint = `http://localhost:8000/myapp/simulations/${simulationId}/download/${fileType}/`;
-
-            // Use direct URL with authentication token in query param
-            // Make sure this matches what your backend expects
-            const url = `${endpoint}?bearer=${token}`;
-
-            // Create a hidden link and trigger download
-            const link = document.createElement('a');
-            link.href = url;
-
-            // For certain file types, we want to download directly
-            if (fileType === 'result' || fileType === 'summary') {
-                link.download = `simulation_${simulationId}_${fileType}`;
-            } else {
-                // For images, opening in a new tab works better
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
+            if (!token) {
+                setError('Not authenticated. Please log in again.');
+                setDownloading(false);
+                return;
             }
 
+            const endpoint = `http://localhost:8000/myapp/simulations/${simulationId}/download/${fileType}/`;
+
+            // Use axios to fetch the file with proper authentication headers
+            const response = await axios({
+                url: endpoint,
+                method: 'GET',
+                responseType: 'blob',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            // Create a URL for the blob data
+            const blob = new Blob([response.data]);
+            const url = window.URL.createObjectURL(blob);
+
+            // Determine filename from Content-Disposition header or fallback
+            let filename = `simulation_${simulationId}_${fileType}`;
+            const contentDisposition = response.headers['content-disposition'];
+            if (contentDisposition) {
+                const filenameMatch = /filename="?([^"]*)"?/.exec(contentDisposition);
+                if (filenameMatch && filenameMatch[1]) {
+                    filename = filenameMatch[1];
+                }
+            }
+
+            // Create download link and trigger it
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
 
-            // Hide the menu after selecting an option
+            // Clean up
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
             setMenuOpen(false);
             setTimeout(() => setDownloading(false), 1000);
         } catch (err) {
             console.error('Download error:', err);
-            setError('Failed to initiate download');
+            setError(err.response?.status === 401 ? 'Authentication failed. Please log in again.' : 'Failed to download file');
             setDownloading(false);
         }
     };
@@ -82,8 +101,9 @@ const SimulationDownload = ({ simulationId }) => {
                     onClick={() => setMenuOpen(!menuOpen)}
                 >
                     <span>{downloading ? 'Downloading...' : 'Download'}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
 
