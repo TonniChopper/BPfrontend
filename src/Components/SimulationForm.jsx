@@ -1,6 +1,8 @@
 import {useState} from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
+import PropTypes from "prop-types";
+import Navbar from "./Navbar.jsx";
 
 const SimulationForm = () => {
     const [formData, setFormData] = useState({
@@ -36,7 +38,7 @@ const SimulationForm = () => {
         {
             title: "Basic Structural Analysis",
             description: "Simple beam structural analysis showing stress distribution under load.",
-            image: "",
+            image: "/stress.png",
             parameters: {
                 length: "10",
                 width: "2",
@@ -51,7 +53,7 @@ const SimulationForm = () => {
         {
             title: "Advanced Deformation Study",
             description: "Complex model showing deformation patterns under pressure.",
-            image: "",
+            image: "/deform.png",
             parameters: {
                 length: "5",
                 width: "5",
@@ -108,11 +110,9 @@ const SimulationForm = () => {
     };
 
     // Example simulation card component
-    // eslint-disable-next-line react/prop-types
     const ExampleCard = ({example}) => (
         <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col">
             <img
-                {/* eslint-disable-next-line react/prop-types */}
                 src={example.image}
                 alt={example.title}
                 className="w-full h-40 object-cover"
@@ -132,7 +132,9 @@ const SimulationForm = () => {
     );
 
     return (
-        <div className="min-h-screen bg-gradient-to-r from-gray-700 via-gray-800 to-gray-900 text-white py-8 px-4">
+        <>
+            <Navbar />
+            <div className="min-h-screen bg-gradient-to-r from-gray-700 via-gray-800 to-gray-900 text-white py-8 px-4">
             <div className="max-w-6xl mx-auto">
                 <h1 className="text-4xl font-bold text-center mb-10 text-amber-400">Simulation Creator</h1>
 
@@ -214,7 +216,12 @@ const SimulationForm = () => {
                 </div>
             </div>
         </div>
+        </>
     );
 };
+
+SimulationForm.propTypes = {
+    example: PropTypes.array,
+}
 
 export default SimulationForm;

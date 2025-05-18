@@ -24,8 +24,8 @@ const SimulationSelection = () => {
     },
   ];
 
-  const handleCreate = (simulationType) => {
-    navigate('/simulation/new');
+  const handleCreate = () => {
+    navigate('/simulations/new');
   };
 
   const toggleInfo = (id) => {
@@ -64,7 +64,7 @@ const SimulationSelection = () => {
 
                 <div className="flex space-x-3">
                   <button
-                    onClick={() => handleCreate(simulation.id)}
+                    onClick={() => handleCreate()}
                     className="px-4 py-2 bg-amber-500 text-black font-bold rounded hover:bg-orange-500 transition-colors flex-grow"
                   >
                     Create
