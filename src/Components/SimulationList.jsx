@@ -38,7 +38,6 @@ const SimulationList = () => {
 
     return (
         <>
-            <Navbar/>
             <div className="bg-gray-900 rounded-lg p-6 shadow-lg">
                 <h2 className="text-2xl font-bold text-yellow-500 mb-4">Your Simulations</h2>
 

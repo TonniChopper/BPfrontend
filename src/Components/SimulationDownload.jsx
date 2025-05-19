@@ -10,9 +10,9 @@ const SimulationDownload = ({simulationId}) => {
     // File types available for download
     const fileTypes = [
         {id: 'result', name: 'Text Results'},
-        {id: 'geometry', name: 'Geometry'},
+        {id: 'stress', name: 'Stress'},
         {id: 'mesh', name: 'Mesh'},
-        {id: 'results', name: 'Results Image'},
+        {id: 'deformation', name: 'Deformation'},
         {id: 'summary', name: 'Summary JSON'}
     ];
 
