@@ -127,7 +127,7 @@ const SimulationDetail = () => {
             <Navbar/>
             <div className="bg-gray-800 rounded-lg shadow-xl p-6 mb-8">
                 <h1 className="text-3xl font-bold text-amber-500 mb-6">
-                    Simulation #{simulation.id}
+                    {simulation.title}
                 </h1>
 
                 {/* Metadata section */}
