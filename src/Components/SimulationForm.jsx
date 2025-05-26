@@ -6,6 +6,7 @@ import Navbar from "./Navbar.jsx";
 
 const SimulationForm = () => {
     const [formData, setFormData] = useState({
+        title: '',
         length: '',
         width: '',
         depth: '',
@@ -40,6 +41,7 @@ const SimulationForm = () => {
             description: "Simple beam structural analysis showing stress distribution under load.",
             image: "/stress.png",
             parameters: {
+                title: "Basic Structural Analysis",
                 length: "5",
                 width: "2.5",
                 depth: "0.1",
@@ -55,6 +57,7 @@ const SimulationForm = () => {
             description: "Complex model showing deformation patterns under pressure.",
             image: "/deform.png",
             parameters: {
+                title: "Advanced Deformation Study",
                 length: "15",
                 width: "5",
                 depth: "0.5",
@@ -90,6 +93,7 @@ const SimulationForm = () => {
 
         try {
             const convertedData = {
+                title: formData.title,
                 length: parseFloat(formData.length),
                 width: parseFloat(formData.width),
                 depth: parseFloat(formData.depth),

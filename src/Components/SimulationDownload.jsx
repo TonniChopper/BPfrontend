@@ -58,8 +58,9 @@ const SimulationDownload = ({simulationId}) => {
                 }
             });
 
+            const contentType = response.headers['content-type'];
             // Create a URL for the blob data
-            const blob = new Blob([response.data]);
+            const blob = new Blob([response.data], { type: contentType || 'application/octet-stream' });
             const url = window.URL.createObjectURL(blob);
 
             // Determine filename from Content-Disposition header or fallback
