@@ -83,7 +83,8 @@ const SimulationForm = () => {
     };
 
     const applyExample = (parameters) => {
-        setFormData(parameters);
+        const { title, ...restParameters } = parameters;
+        setFormData({ title, ...restParameters });
     };
 
     const handleSubmit = async e => {
@@ -92,8 +93,8 @@ const SimulationForm = () => {
         setError(null);
 
         try {
+            const { title, ...paramFields } = formData;
             const convertedData = {
-                title: formData.title,
                 length: parseFloat(formData.length),
                 width: parseFloat(formData.width),
                 depth: parseFloat(formData.depth),
@@ -104,15 +105,75 @@ const SimulationForm = () => {
                 pressure: parseFloat(formData.pressure)
             }
             const config = token ? {headers: {Authorization: `Bearer ${token}`}} : {};
-            const dataToSend = {parameters: convertedData}
+            const dataToSend = {
+                title: title,
+                parameters: convertedData
+            };
             const response = await axios.post('http://localhost:8000/myapp/simulations/', dataToSend, config);
-            navigate(`/simulations/${response.data.id}`);
+
+            // Check if the response indicates async processing (status 202)
+            if (response.status === 202) {
+                // Start polling for status updates
+                const simulationId = response.data.id;
+                pollSimulationStatus(simulationId);
+            } else {
+                // Regular completion - navigate to simulation details
+                navigate(`/simulations/${response.data.id}`);
+                setLoading(false);
+            }
         } catch (err) {
             setError('Simulation submission failed. Please try again.');
+            setLoading(false);
         }
-        setLoading(false);
     };
 
+    const pollSimulationStatus = (simulationId) => {
+        // Create a modal/overlay to show loading state
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-amber-500 mx-auto mb-4"></div>
+            <h3 class="text-xl font-bold text-amber-400 mb-2">Processing Simulation</h3>
+            <p class="text-gray-300">Please wait while we process your simulation...</p>
+        </div>
+    `;
+        document.body.appendChild(modal);
+
+        // Poll every 2 seconds
+        const interval = setInterval(async () => {
+            try {
+                const statusResponse = await axios.get(`http://localhost:8000/myapp/simulations/${simulationId}/status/`, {
+                    headers: {Authorization: `Bearer ${token}`}
+                });
+
+                const status = statusResponse.data.status;
+
+                if (['COMPLETED', 'FAILED'].includes(status)) {
+                    // Stop polling
+                    clearInterval(interval);
+
+                    // Remove loading modal
+                    document.body.removeChild(modal);
+                    setLoading(false);
+
+                    // Handle completion or failure
+                    if (status === 'COMPLETED') {
+                        navigate(`/simulations/${simulationId}`);
+                    } else {
+                        setError('Simulation processing failed. Please try again.');
+                    }
+                }
+            } catch (error) {
+                // Handle error
+                clearInterval(interval);
+                document.body.removeChild(modal);
+                setLoading(false);
+                setError('Error checking simulation status. Please check your simulations list.');
+                console.error('Status polling error:', error);
+            }
+        }, 2000);
+    };
     // Example simulation card component
     const ExampleCard = ({example}) => (
         <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col h-full">
