@@ -12,6 +12,7 @@ const SimulationForm = () => {
         depth: '',
         radius: '',
         num: '',
+        elem_size: '',
         e: '',
         nu: '',
         pressure: ''
@@ -47,6 +48,7 @@ const SimulationForm = () => {
                 depth: "0.1",
                 radius: "0.5",
                 num: "3",
+                elem_size: "0.2",
                 e: "2e11",
                 nu: "0.3",
                 pressure: "10000"
@@ -63,6 +65,7 @@ const SimulationForm = () => {
                 depth: "0.5",
                 radius: "1.5",
                 num: "4",
+                elem_size: "0.3",
                 e: "7e11",
                 nu: "0.33",
                 pressure: "50000"
@@ -100,6 +103,7 @@ const SimulationForm = () => {
                 depth: parseFloat(formData.depth),
                 radius: parseFloat(formData.radius),
                 num: parseInt(formData.num, 10),
+                elem_size: parseFloat(formData.elem_size),
                 e: parseFloat(formData.e),
                 nu: parseFloat(formData.nu),
                 pressure: parseFloat(formData.pressure)
