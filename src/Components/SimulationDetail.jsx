@@ -106,7 +106,7 @@ const SimulationDetail = () => {
         setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
     };
 
-    const handleMouseDown = (e) => {
+    const handleMouseDown = () => {
         if (zoomLevel > 1) {
             setIsPanning(true);
         }
@@ -169,6 +169,31 @@ const SimulationDetail = () => {
     const formatDate = (dateString) => {
         if (!dateString) return 'Not available';
         return new Date(dateString).toLocaleString();
+    };
+
+    const formatStatistics = (stats) => {
+        if (!stats) return {};
+
+        // Create a filtered copy of the statistics object
+        const filteredStats = { ...stats };
+
+        // Remove the last three statistics (assuming they are node_count, element_count and one more)
+        const keysToRemove = ['has_stress_image', 'has_deformation_image', 'has_mesh_image'];
+        keysToRemove.forEach(key => {
+            if (key in filteredStats) {
+                delete filteredStats[key];
+            }
+        });
+
+        // Round all numeric values to 6 decimal places
+        Object.keys(filteredStats).forEach(key => {
+            const value = filteredStats[key];
+            if (typeof value === 'number') {
+                filteredStats[key] = Number(value.toFixed(6));
+            }
+        });
+
+        return filteredStats;
     };
 
     // Extract statistics from result summary if available
@@ -273,7 +298,7 @@ const SimulationDetail = () => {
                     <h2 className="text-2xl font-bold text-amber-400 mb-4">Statistics</h2>
                     {simulation.has_result && statistics ? (
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {Object.entries(statistics).map(([key, value]) => (
+                            {Object.entries(formatStatistics(statistics)).map(([key, value]) => (
                                 <div key={key} className="bg-gray-700 p-3 rounded-lg relative">
                                     <div className="flex items-center justify-between">
                                         <p>
