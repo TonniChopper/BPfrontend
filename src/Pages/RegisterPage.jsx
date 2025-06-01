@@ -33,7 +33,7 @@ const Registration = () => {
             const response = await Api.post('/myapp/user/registration/', formData);
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
-            navigate('/ProfilePage');
+            navigate('/');
         } catch (err) {
             console.error(err);
             setError('Registration failed. Please try again.');
