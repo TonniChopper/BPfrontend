@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react';
-import axios from 'axios';
 import {Link} from 'react-router-dom';
+import { toast } from 'sonner';
+import Api from '../api/api.jsx';
 
 const SimulationList = () => {
     const [simulations, setSimulations] = useState([]);
@@ -20,8 +21,7 @@ const SimulationList = () => {
             }
 
             try {
-                const response = await axios.get('http://localhost:8000/myapp/simulations/', {
-                    headers: {Authorization: `Bearer ${token}`},
+                const response = await Api.get('/myapp/simulations/', {
                     params: {
                         page: currentPage,
                         page_size: itemsPerPage,
@@ -43,7 +43,9 @@ const SimulationList = () => {
                     setTotalPages(Math.ceil(sortedData.length / itemsPerPage));
                 }
             } catch (err) {
-                setError('Failed to load simulations.');
+                const errorMsg = 'Не удалось загрузить симуляции';
+                setError(errorMsg);
+                toast.error(errorMsg);
                 console.error(err);
             } finally {
                 setLoading(false);
@@ -54,15 +56,14 @@ const SimulationList = () => {
     }, [currentPage]);
 
     const handleDeleteSimulation = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this simulation?')) {
+        if (!window.confirm('Вы уверены, что хотите удалить эту симуляцию?')) {
             return;
         }
 
         try {
-            const token = localStorage.getItem('access_token');
-            await axios.delete(`http://localhost:8000/myapp/simulations/${id}/`, {
-                headers: {Authorization: `Bearer ${token}`}
-            });
+            await Api.delete(`/myapp/simulations/${id}/`);
+
+            toast.success('Симуляция успешно удалена');
 
             // Remove from local state
             setSimulations(simulations.filter(sim => sim.id !== id));
@@ -72,9 +73,7 @@ const SimulationList = () => {
                 setCurrentPage(currentPage - 1);
             } else {
                 // Reload the current page to get a new set
-                const token = localStorage.getItem('access_token');
-                const response = await axios.get('http://localhost:8000/myapp/simulations/', {
-                    headers: {Authorization: `Bearer ${token}`},
+                const response = await Api.get('/myapp/simulations/', {
                     params: {
                         page: currentPage,
                         page_size: itemsPerPage,
@@ -87,7 +86,9 @@ const SimulationList = () => {
             }
         } catch (err) {
             console.error('Failed to delete simulation:', err);
-            setError('Failed to delete simulation.');
+            const errorMsg = 'Не удалось удалить симуляцию';
+            setError(errorMsg);
+            toast.error(errorMsg);
         }
     };
 

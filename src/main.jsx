@@ -4,11 +4,21 @@ import './index.css'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import { Toaster } from 'sonner'
+import ErrorBoundary from './Components/ErrorBoundary.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <ErrorBoundary>
+        <App />
+        <Toaster
+          position="top-right"
+          theme="dark"
+          richColors
+          closeButton
+        />
+      </ErrorBoundary>
     </BrowserRouter>
   </StrictMode>,
 )

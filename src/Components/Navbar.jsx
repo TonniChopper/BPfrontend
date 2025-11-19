@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 import {Link, useNavigate} from "react-router-dom";
-import {FaUser, FaSignOutAlt} from "react-icons/fa";
+import {FaSignOutAlt} from "react-icons/fa";
 
 const Navbar = () => {
   const navigate = useNavigate();

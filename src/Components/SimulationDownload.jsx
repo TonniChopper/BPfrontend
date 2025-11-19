@@ -1,6 +1,8 @@
 import {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
+import { toast } from 'sonner';
+import Api from '../api/api.jsx';
+import { API_BASE_URL } from '../constants.js';
 
 const SimulationDownload = ({simulationId}) => {
     const [downloading, setDownloading] = useState(false);
@@ -41,21 +43,20 @@ const SimulationDownload = ({simulationId}) => {
         try {
             const token = localStorage.getItem('access_token');
             if (!token) {
-                setError('Not authenticated. Please log in again.');
+                const errorMsg = 'Не авторизован. Пожалуйста, войдите снова.';
+                setError(errorMsg);
+                toast.error(errorMsg);
                 setDownloading(false);
                 return;
             }
 
-            const endpoint = `http://localhost:8000/myapp/simulations/${simulationId}/download/${fileType}/`;
+            const endpoint = `${API_BASE_URL}/myapp/simulations/${simulationId}/download/${fileType}/`;
 
-            // Use axios to fetch the file with proper authentication headers
-            const response = await axios({
+            // Use Api to fetch the file with proper authentication headers
+            const response = await Api({
                 url: endpoint,
                 method: 'GET',
                 responseType: 'blob',
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
             });
 
             const contentType = response.headers['content-type'];
@@ -84,10 +85,16 @@ const SimulationDownload = ({simulationId}) => {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
             setMenuOpen(false);
+
+            toast.success(`Файл "${filename}" успешно загружен!`);
             setTimeout(() => setDownloading(false), 1000);
         } catch (err) {
             console.error('Download error:', err);
-            setError(err.response?.status === 401 ? 'Authentication failed. Please log in again.' : 'Failed to download file');
+            const errorMsg = err.response?.status === 401
+                ? 'Ошибка аутентификации. Войдите снова.'
+                : 'Не удалось скачать файл';
+            setError(errorMsg);
+            toast.error(errorMsg);
             setDownloading(false);
         }
     };

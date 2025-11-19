@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
+import Api from '../api/api.jsx';
 import SimulationDownload from './SimulationDownload';
 import SimulationViewer from './SimulationViewer';
 import Navbar from "./Navbar.jsx";
@@ -20,7 +21,6 @@ const SimulationDetail = () => {
     const [activeTooltip, setActiveTooltip] = useState(null);
     const [modalInfo, setModalInfo] = useState(null);
     const imageRef = useRef(null);
-    const token = localStorage.getItem('access_token');
 
     const tooltips = {
         title: "Enter a descriptive name for your simulation.",
@@ -74,11 +74,12 @@ const SimulationDetail = () => {
     useEffect(() => {
         const fetchSimulationDetails = async () => {
             try {
-                const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-                const response = await axios.get(`http://localhost:8000/myapp/simulations/${id}/`, config);
+                const response = await Api.get(`/myapp/simulations/${id}/`);
                 setSimulation(response.data);
             } catch (err) {
-                setError('Failed to load simulation details.');
+                const errorMsg = 'Не удалось загрузить детали симуляции';
+                setError(errorMsg);
+                toast.error(errorMsg);
                 console.error(err);
             } finally {
                 setLoading(false);
@@ -86,7 +87,7 @@ const SimulationDetail = () => {
         };
 
         fetchSimulationDetails();
-    }, [id, token]);
+    }, [id]);
 
     const handleImageClick = (imageUrl) => {
         setSelectedImage(imageUrl);
@@ -130,19 +131,19 @@ const SimulationDetail = () => {
         setResumeError(null);
 
         try {
-            await axios.post(
-                `http://localhost:8000/myapp/simulations/${id}/resume/`,
-                {},
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            await Api.post(`/myapp/simulations/${id}/resume/`, {});
 
             // Update the simulation status in the state
             setSimulation(prev => ({
                 ...prev,
                 status: 'RUNNING'
             }));
+
+            toast.success('Симуляция возобновлена успешно!');
         } catch (err) {
-            setResumeError('Failed to resume simulation. Please try again.');
+            const errorMsg = 'Не удалось возобновить симуляцию. Попробуйте снова.';
+            setResumeError(errorMsg);
+            toast.error(errorMsg);
             console.error(err);
         } finally {
             setResuming(false);
