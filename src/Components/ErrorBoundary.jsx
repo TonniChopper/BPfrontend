@@ -59,7 +59,7 @@ class ErrorBoundary extends Component {
                             Произошла непредвиденная ошибка. Пожалуйста, попробуйте обновить страницу.
                         </p>
 
-                        {process.env.NODE_ENV === 'development' && this.state.error && (
+                        {import.meta.env.DEV && this.state.error && (
                             <details className="mb-6">
                                 <summary className="cursor-pointer text-amber-400 hover:text-amber-300 mb-2">
                                     Подробности ошибки (только в режиме разработки)
@@ -112,4 +112,3 @@ ErrorBoundary.propTypes = {
 };
 
 export default ErrorBoundary;
-
